@@ -3,11 +3,19 @@ import 'dotenv/config'
 
 const { Pool } = pg
 
+const databaseUrl = process.env.DATABASE_URL
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is not set. Configure it in Vercel Dashboard → Settings → Environment Variables')
+}
+
+console.log('Connecting to database:', databaseUrl.replace(/:[^:@]+@/, ':****@'))
+
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/qrcanvas',
+  connectionString: databaseUrl,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 })
 
 pool.on('error', (err) => {

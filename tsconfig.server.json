@@ -16,9 +16,9 @@
     "composite": false,
     "paths": {
       "@/*": ["./src/*"],
-      "@server/*": ["./server/*"]
+      "@server/*": ["./api/*"]
     }
   },
-  "include": ["server/**/*.ts"],
+  "include": ["api/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

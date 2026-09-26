@@ -8,7 +8,15 @@ if (!databaseUrl) {
   throw new Error('DATABASE_URL environment variable is not set. Configure it in Vercel Dashboard → Settings → Environment Variables')
 }
 
+console.log('Raw DATABASE_URL:', databaseUrl)
 console.log('Connecting to database:', databaseUrl.replace(/:[^:@]+@/, ':****@'))
+
+try {
+  new URL(databaseUrl)
+  console.log('DATABASE_URL is valid URL format')
+} catch (e) {
+  console.error('DATABASE_URL is NOT a valid URL:', e)
+}
 
 export const pool = new Pool({
   connectionString: databaseUrl,

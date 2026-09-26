@@ -176,3 +176,12 @@ docker run -p 3001:3001 \
 ## 📝 Licencia
 
 MIT
+
+---
+
+## 🔧 Últimos cambios
+
+- Fix: Evento `refresh-images` declarado correctamente en Sidebar
+- Fix: Watcher para recargar editor al cambiar UUID (plantillas)
+- Fix: Generación de slugs únicos para evitar duplicados
+- Fix: Crear tarjeta usando `addCanvas` del composable

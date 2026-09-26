@@ -1,5 +1,4 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "name": "qrcanvas-platform",
   "framework": "vite",
   "buildCommand": "npm run build",
@@ -20,10 +19,5 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@qrcanvas-db",
-    "JWT_SECRET": "@qrcanvas-jwt-secret",
-    "FRONTEND_URL": "https://qrcanvas-platform.vercel.app"
-  }
+  ]
 }

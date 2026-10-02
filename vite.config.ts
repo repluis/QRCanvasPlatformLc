@@ -1,41 +1,40 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import tailwindcss from 'tailwindcss'
-import autoprefixer from 'autoprefixer'
-import { resolve } from 'path'
+import path from 'path'
 
 export default defineConfig({
-  plugins: [vue()],
-  css: {
-    postcss: {
-      plugins: [tailwindcss(), autoprefixer()],
-    },
-  },
+  plugins: [
+    vue({
+      template: {
+        transformAssetUrls: {
+          base: null,
+          includeAbsolute: false,
+        },
+      },
+    }),
+  ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
-      '@components': resolve(__dirname, './src/components'),
-      '@pages': resolve(__dirname, './src/pages'),
-      '@composables': resolve(__dirname, './src/composables'),
-      '@services': resolve(__dirname, './src/services'),
-      '@stores': resolve(__dirname, './src/stores'),
-      '@types': resolve(__dirname, './src/types'),
-      '@utils': resolve(__dirname, './src/utils'),
-      '@layouts': resolve(__dirname, './src/layouts'),
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@views': path.resolve(__dirname, './src/views'),
+      '@stores': path.resolve(__dirname, './src/stores'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@composables': path.resolve(__dirname, './src/composables'),
+      '@types': path.resolve(__dirname, './src/types'),
     },
   },
   server: {
-    host: '127.0.0.1',
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:3000',
         changeOrigin: true,
       },
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: 'dist/client',
     sourcemap: true,
   },
 })

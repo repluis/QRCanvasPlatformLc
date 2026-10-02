@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid())
+  name          String
+  email         String    @unique
+  password      String
+  emailVerified DateTime? @map("email_verified_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  pages         Page[]
+
+  @@map("users")
+}
+
+model Page {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  title     String
+  slug      String   @unique
+  elements  Json     @default("[]")
+  canvases  Json?
+  background String  @default("#ffffff")
+  status    Boolean  @default(true)
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pages")
+}
+
+model Media {
+  id             Int      @id @default(autoincrement())
+  modelType      String   @map("model_type")
+  modelId        Int      @map("model_id")
+  uuid           String   @unique @default(uuid())
+  collectionName String   @map("collection_name")
+  name           String
+  fileName       String   @map("file_name")
+  mimeType       String?  @map("mime_type")
+  disk           String
+  conversionsDisk String? @map("conversions_disk")
+  size           Int
+  manipulations  Json     @default("[]")
+  customProperties Json?  @map("custom_properties")
+  generatedConversions Json @default("[]") @map("generated_conversions")
+  responsiveImages Json   @default("[]") @map("responsive_images")
+  orderColumn    Int?     @map("order_column")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([modelType, modelId])
+  @@map("media")
+}
+
+model Cache {
+  key   String @id
+  value String
+  expiration Int
+
+  @@map("cache")
+}
+
+model Job {
+  id           BigInt   @id @default(autoincrement())
+  queue        String
+  payload      String
+  attempts     Int      @default(0)
+  reservedAt   Int?     @map("reserved_at")
+  availableAt  Int      @map("available_at")
+  createdAt    Int      @map("created_at")
+
+  @@index([queue, reservedAt])
+  @@map("jobs")
+}
+
+model Session {
+  id        String   @id
+  userId    Int?     @map("user_id")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  payload   String
+  lastActivity Int   @map("last_activity")
+
+  @@index([userId])
+  @@map("sessions")
+}

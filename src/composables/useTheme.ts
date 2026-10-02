@@ -1,20 +1,7 @@
-import { ref, onMounted, watch } from 'vue'
-
-const isDark = ref(true)
+import { ref, onMounted, watchEffect } from 'vue'
 
 export function useTheme() {
-  function toggleTheme() {
-    isDark.value = !isDark.value
-    applyTheme()
-  }
-
-  function applyTheme() {
-    if (isDark.value) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }
+  const isDark = ref(false)
 
   onMounted(() => {
     const saved = localStorage.getItem('theme')
@@ -26,8 +13,20 @@ export function useTheme() {
     applyTheme()
   })
 
-  watch(isDark, (value) => {
-    localStorage.setItem('theme', value ? 'dark' : 'light')
+  function applyTheme() {
+    if (isDark.value) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+  }
+
+  function toggleTheme() {
+    isDark.value = !isDark.value
+  }
+
+  watchEffect(() => {
     applyTheme()
   })
 

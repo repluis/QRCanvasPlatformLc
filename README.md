@@ -1,187 +1,213 @@
 # QRCanvasPlatform
 
-Una plataforma para crear y compartir páginas hermosas con códigos QR, construida con Vue 3, TypeScript, Vite, Express y PostgreSQL.
+A modern QR code canvas platform built with **Vue 3**, **Vite**, **Express**, **PostgreSQL**, and **Prisma ORM**. Deployable to Vercel.
 
-## 🚀 Tecnologías
+## Tech Stack
 
-- **Frontend**: Vue 3 + TypeScript + Vite + Tailwind CSS + Pinia + Vue Router
-- **Backend**: Node.js + Express + TypeScript
+- **Frontend**: Vue 3 + TypeScript + Vite + Pinia + Vue Router + Tailwind CSS
+- **Backend**: Express + TypeScript + Prisma ORM
 - **Database**: PostgreSQL
-- **Deployment**: Docker + Vercel
+- **Authentication**: JWT with HttpOnly cookies
+- **Deployment**: Vercel (serverless functions)
 
-## 📦 Instalación
-
-### Desarrollo Local
-
-1. Clona el repositorio:
-```bash
-cd QRCanvasPlatformLc
-```
-
-2. Instala dependencias:
-```bash
-npm install
-```
-
-3. Configura variables de entorno:
-```bash
-cp .env.example .env
-# Edita .env con tus configuraciones
-```
-
-4. Inicia la base de datos con Docker:
-```bash
-docker-compose up -d postgres
-```
-
-5. Ejecuta migraciones:
-```bash
-npm run db:migrate
-```
-
-6. (Opcional) Ejecuta seed:
-```bash
-npm run db:seed
-```
-
-7. Inicia el servidor de desarrollo:
-```bash
-npm run dev
-```
-
-Esto iniciará:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3001
-
-### Con Docker Compose (Todo en uno)
-
-```bash
-docker-compose up --build
-```
-
-## 🏗️ Estructura del Proyecto
+## Project Structure
 
 ```
 QRCanvasPlatformLc/
-├── src/                    # Frontend Vue
-│   ├── components/         # Componentes reutilizables
-│   │   ├── ui/            # Componentes base (Button, Card)
-│   │   ├── editor/        # Componentes del editor
-│   │   ├── layout/        # Header, Footer
-│   │   └── sidebar/       # Paneles laterales
-│   ├── pages/             # Páginas/Vistas
+├── src/                    # Frontend source
+│   ├── components/         # Vue components
+│   │   ├── ui/            # Base UI components (Button, Card)
+│   │   ├── layout/        # Layout components (Header, Footer)
+│   │   ├── editor/        # Editor components (Toolbar, Canvas, Panels)
+│   │   └── sidebar/       # Sidebar components (ImageLibrary)
+│   ├── composables/       # Vue composables (useCanvas, useTheme)
+│   ├── router/            # Vue Router configuration
+│   ├── services/          # API services
+│   ├── stores/            # Pinia stores (auth, pages)
+│   ├── types/             # TypeScript types
+│   ├── views/             # Page views
 │   │   ├── auth/          # Login, Register
-│   │   └── editor/        # Editor de páginas
-│   ├── composables/       # Composables de Vue
-│   ├── services/          # Servicios API
-│   ├── stores/            # Pinia stores
-│   ├── types/             # Tipos TypeScript
-│   ├── layouts/           # Layouts
-│   └── utils/             # Utilidades
-├── server/                 # Backend Express
-│   ├── routes/            # Rutas API
-│   ├── middleware/        # Middleware
-│   ├── controllers/       # Controladores
-│   ├── db/                # Base de datos
-│   └── utils/             # Utilidades
-├── public/                 # Archivos estáticos
-├── dist/                   # Build de producción
-├── docker-compose.yml     # Docker Compose
-├── Dockerfile             # Docker multi-stage
-├── vercel.json            # Configuración Vercel
-└── package.json
+│   │   ├── home/          # Dashboard
+│   │   ├── pages/         # Editor, Show
+│   │   └── qr/            # Love Declaration QR
+│   ├── App.vue
+│   ├── main.ts
+│   └── style.css
+├── server/                 # Backend source
+│   ├── index.ts           # Main server (local dev)
+│   └── vercel.ts          # Vercel serverless entry
+├── prisma/                # Prisma schema
+│   └── schema.prisma
+├── dist/                  # Build output
+├── public/                # Static assets
+├── .env                   # Environment variables
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── vercel.json
+└── README.md
 ```
 
-## 🔧 Scripts Disponibles
+## Features
+
+- 🔐 **Authentication**: Register, Login, JWT tokens in HttpOnly cookies
+- 📝 **Page Editor**: Drag-and-drop canvas editor with multiple card support
+- 🎨 **Elements**: Text, Images, Shapes, QR Codes, Navigation, Carousels
+- 📱 **Templates**: Pre-built templates (Birthday, Wedding, Love Letter)
+- 🔗 **QR Generation**: Dynamic QR codes with customization
+- 🌙 **Dark Mode**: System-aware with manual toggle
+- 📄 **Public Pages**: Shareable public page views with print support
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- PostgreSQL 14+
+- pnpm (recommended) or npm
+
+### Installation
+
+1. **Clone and install dependencies**
+   ```bash
+   cd QRCanvasPlatformLc
+   npm install
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database URL and secrets
+   ```
+
+3. **Set up the database**
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+   
+   # Push schema to database
+   npm run db:push
+   
+   # Or run migrations
+   npm run db:migrate
+   ```
+
+4. **Start development servers**
+   ```bash
+   npm run dev
+   ```
+   This starts both frontend (port 5173) and backend (port 3000) concurrently.
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | Required |
+| `JWT_SECRET` | Secret for JWT signing | Required |
+| `JWT_EXPIRES_IN` | Token expiration | `7d` |
+| `PORT` | Backend port | `3000` |
+| `NODE_ENV` | Environment | `development` |
+| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:5173` |
+
+### Database Schema
+
+The Prisma schema includes:
+- **User**: id, uuid, name, email, password, timestamps
+- **Page**: id, uuid, title, slug, elements (JSON), canvases (JSON), background, status, userId
+- **Media**: Spatie Media Library compatible table
+- **Cache, Job, Session**: Laravel-compatible tables
+
+## Available Scripts
 
 ```bash
-npm run dev              # Desarrollo (frontend + backend)
-npm run dev:frontend     # Solo frontend
-npm run dev:backend      # Solo backend
-npm run build            # Build completo (frontend + backend)
-npm run build:frontend   # Build solo frontend
-npm run build:backend    # Build solo backend
-npm run start            # Iniciar producción
-npm run db:migrate       # Ejecutar migraciones
-npm run db:seed          # Ejecutar seed
+# Development
+npm run dev              # Start both frontend and backend
+npm run dev:frontend     # Frontend only (Vite)
+npm run dev:backend      # Backend only (tsx watch)
+
+# Building
+npm run build            # Build both frontend and backend
+npm run build:frontend   # Build frontend (Vite)
+npm run build:backend    # Build backend (tsc)
+
+# Database
+npm run db:generate      # Generate Prisma client
+npm run db:push          # Push schema changes
+npm run db:migrate       # Run migrations
+npm run db:studio        # Open Prisma Studio
+
+# Other
+npm run preview          # Preview production build
+npm run lint             # Run ESLint
+npm run test             # Run Vitest
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
-### Autenticación
-- `POST /api/auth/login` - Iniciar sesión
-- `POST /api/auth/register` - Registrarse
-- `POST /api/auth/logout` - Cerrar sesión
-- `GET /api/auth/me` - Obtener usuario actual
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login
+- `POST /api/auth/logout` - Logout
+- `GET /api/auth/me` - Get current user
 
-### Páginas
-- `GET /api/pages` - Listar páginas del usuario
-- `GET /api/pages/editor/data` - Datos para el editor
-- `GET /api/pages/:uuid` - Obtener página por UUID
-- `POST /api/pages` - Crear/actualizar página
-- `POST /api/pages/:id/toggle-status` - Cambiar estado
-- `DELETE /api/pages/:id` - Eliminar página
+### Pages
+- `GET /api/pages` - List user's pages
+- `GET /api/pages/:uuid` - Get public page
+- `POST /api/pages` - Create page
+- `PUT /api/pages/:id` - Update page
+- `DELETE /api/pages/:id` - Delete page
+- `POST /api/pages/:id/toggle-status` - Toggle page status
+- `GET /api/templates` - List templates
+- `POST /api/pages/from-template/:templateId` - Create from template
 
 ### QR Codes
-- `POST /api/qr/generate` - Generar QR
+- `POST /api/qr/generate` - Generate QR code
 
-### Imágenes
-- `GET /api/images` - Listar imágenes
-- `POST /api/images` - Subir imagen
-- `DELETE /api/images/:id` - Eliminar imagen
+## Deployment to Vercel
 
-### Plantillas
-- `GET /api/templates` - Listar plantillas
-- `GET /api/templates/:id` - Obtener plantilla
+1. **Push to GitHub**
 
-### Usuario
-- `PUT /api/user/profile` - Actualizar perfil
-- `PUT /api/user/password` - Cambiar contraseña
-- `DELETE /api/user/account` - Eliminar cuenta
+2. **Import in Vercel**
+   - Connect your repository
+   - Framework preset: Vite
+   - Build command: `npm run build`
+   - Output directory: `dist/client`
 
-## 🎨 Características del Editor
+3. **Environment Variables**
+   Add in Vercel dashboard:
+   - `DATABASE_URL` (PostgreSQL connection string)
+   - `JWT_SECRET` (strong random string)
+   - `NODE_ENV=production`
+   - `FRONTEND_URL` (your Vercel domain)
 
-- **Múltiples tarjetas** por página
-- **Elementos**: Texto, Imágenes, Formas, QR, Carrusel, Animaciones, Navegación
-- **Drag & Drop** para posicionar elementos
-- **Redimensionamiento** con handles
-- **Propiedades** por tipo de elemento
-- **Fondos**: Colores, gradientes, patrones, imágenes
-- **Plantillas** predefinidas
-- **Vista previa** e impresión
+4. **Database**
+   - Use Vercel Postgres, Neon, Supabase, or any PostgreSQL provider
+   - Run `prisma migrate deploy` after deployment
 
-## 🚀 Despliegue en Vercel
+## Key Differences from Laravel Version
 
-1. Conecta tu repositorio a Vercel
-2. Configura las variables de entorno:
-   - `DATABASE_URL` (PostgreSQL)
-   - `JWT_SECRET`
-   - `FRONTEND_URL`
-3. Vercel detectará automáticamente la configuración en `vercel.json`
-4. Despliega
+| Laravel | This Version |
+|---------|--------------|
+| Inertia.js | Vue Router + Pinia |
+| Laravel Auth | JWT + HttpOnly cookies |
+| Eloquent ORM | Prisma ORM |
+| Blade/Vue SFC | Pure Vue SFC |
+| Vite + Laravel plugin | Pure Vite |
+| PHP/Composer | Node.js/Express |
 
-## 🐳 Despliegue con Docker
+## Migration Notes
 
-```bash
-# Build
-docker build -t qrcanvas-platform .
+This is a complete rewrite from the Laravel + Inertia version to a pure JavaScript/TypeScript stack. All features have been preserved:
 
-# Run
-docker run -p 3001:3001 \
-  -e DATABASE_URL=postgresql://user:pass@host:5432/db \
-  -e JWT_SECRET=your-secret \
-  qrcanvas-platform
-```
+- ✅ User authentication (register/login/logout)
+- ✅ Page CRUD with multi-canvas support
+- ✅ Drag-and-drop editor with 7 element types
+- ✅ Template system
+- ✅ QR code generation
+- ✅ Public page viewing with print
+- ✅ Dark mode
+- ✅ Responsive design
 
-## 📝 Licencia
+## License
 
 MIT
-
----
-
-## 🔧 Últimos cambios
-
-- Fix: Evento `refresh-images` declarado correctamente en Sidebar
-- Fix: Watcher para recargar editor al cambiar UUID (plantillas)
-- Fix: Generación de slugs únicos para evitar duplicados
-- Fix: Crear tarjeta usando `addCanvas` del composable

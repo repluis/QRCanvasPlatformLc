@@ -1,0 +1,1 @@
+export { pagesService, savePage } from './api'

@@ -1,173 +1,101 @@
+<script setup lang="ts">
+interface Props {
+  element: any
+}
+
+defineProps<Props>()
+
+defineEmits<{
+  update: [id: string, props: any]
+}>()
+
+const errorLevels = ['low', 'medium', 'quartile', 'high']
+</script>
+
 <template>
-  <div class="fixed right-0 top-16 bottom-0 w-72 border-l bg-surface overflow-y-auto p-4 shadow-xl z-30">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="font-semibold text-text">Propiedades del QR</h3>
-      <button @click="$emit('close')" class="text-text-muted hover:text-text">
-        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+  <div class="w-72 border-l bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-4 overflow-y-auto">
+    <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">QR Code Properties</h3>
 
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-text-muted mb-1">Contenido / URL</label>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content</label>
         <textarea
-          v-model="localContent"
-          @input="updateContent"
-          class="w-full rounded-lg border border-border bg-bg p-2 text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          v-model="element.qrText"
           rows="3"
-          placeholder="Texto o URL para el código QR"
-        ></textarea>
+          class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500"
+          @input="emit('update', element.id, { qrText: element.qrText })"
+        />
       </div>
 
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-sm font-medium text-text-muted mb-1">Color principal</label>
-          <input
-            type="color"
-            v-model="localForegroundColor"
-            @change="updateForegroundColor"
-            class="w-full h-10 rounded-lg border border-border bg-bg cursor-pointer"
-          />
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Foreground</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="color"
+              v-model="element.qrForegroundColor"
+              class="w-10 h-10 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer"
+              @change="emit('update', element.id, { qrForegroundColor: element.qrForegroundColor })"
+            />
+            <input
+              type="text"
+              v-model="element.qrForegroundColor"
+              class="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              @change="emit('update', element.id, { qrForegroundColor: element.qrForegroundColor })"
+            />
+          </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-text-muted mb-1">Color de fondo</label>
-          <input
-            type="color"
-            v-model="localBackgroundColor"
-            @change="updateBackgroundColor"
-            class="w-full h-10 rounded-lg border border-border bg-bg cursor-pointer"
-          />
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Background</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="color"
+              v-model="element.qrBackgroundColor"
+              class="w-10 h-10 rounded-lg border border-slate-300 dark:border-slate-600 cursor-pointer"
+              @change="emit('update', element.id, { qrBackgroundColor: element.qrBackgroundColor })"
+            />
+            <input
+              type="text"
+              v-model="element.qrBackgroundColor"
+              class="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              @change="emit('update', element.id, { qrBackgroundColor: element.qrBackgroundColor })"
+            />
+          </div>
         </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-text-muted mb-1">Nivel de corrección</label>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Error Correction</label>
         <select
-          v-model="localErrorCorrectionLevel"
-          @change="updateErrorCorrectionLevel"
-          class="w-full rounded-lg border border-border bg-bg p-2 text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          v-model="element.qrErrorCorrectionLevel"
+          class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500"
+          @change="emit('update', element.id, { qrErrorCorrectionLevel: element.qrErrorCorrectionLevel })"
         >
-          <option value="low">Bajo (L) - 7%</option>
-          <option value="medium">Medio (M) - 15%</option>
-          <option value="quartile">Cuartil (Q) - 25%</option>
-          <option value="high">Alto (H) - 30%</option>
+          <option v-for="level in errorLevels" :key="level" :value="level">{{ level.charAt(0).toUpperCase() + level.slice(1) }}</option>
         </select>
       </div>
 
-      <div class="pt-4 border-t border-border">
-        <label class="block text-sm font-medium text-text-muted mb-2">Vista previa</label>
-        <div class="flex justify-center">
-          <div class="p-4 bg-white rounded-lg shadow">
-            <img
-              v-if="qrImageUrl"
-              :src="qrImageUrl"
-              class="h-32 w-32 object-contain"
-              alt="Vista previa del QR"
-            />
-            <p v-else class="text-center text-text-muted py-8">Generando QR...</p>
-          </div>
-        </div>
+      <div class="flex items-center gap-2">
+        <input
+          type="range"
+          v-model.number="element.opacity"
+          min="0"
+          max="1"
+          step="0.1"
+          class="flex-1"
+          @input="emit('update', element.id, { opacity: element.opacity })"
+        />
+        <span class="text-sm text-slate-500 dark:text-slate-400 w-10">{{ Math.round(element.opacity * 100) }}%</span>
+      </div>
+
+      <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Preview:</p>
+        <img
+          :src="element.qrImageUrl"
+          alt="QR Preview"
+          class="mt-2 w-32 h-32 mx-auto"
+        />
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
-import type { PageElement } from '@/types'
-import { generateQR } from '@services/canvas'
-
-interface Props {
-  element: PageElement
-}
-
-interface Emits {
-  update: [id: string, props: Partial<PageElement>]
-  close: []
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-
-const localContent = ref(props.element.content || '')
-const localForegroundColor = ref(props.element.foregroundColor || '#000000')
-const localBackgroundColor = ref(props.element.backgroundColor || '#ffffff')
-const localErrorCorrectionLevel = ref(props.element.errorCorrectionLevel || 'medium')
-const qrImageUrl = ref(props.element.qrImageUrl || '')
-const generating = ref(false)
-
-async function generateQRCode() {
-  generating.value = true
-  try {
-    const { qr_image_url } = await generateQR({
-      text: localContent.value,
-      foreground_color: localForegroundColor.value.replace('#', ''),
-      background_color: localBackgroundColor.value.replace('#', ''),
-    })
-    qrImageUrl.value = qr_image_url
-    emit('update', props.element.id, { qrImageUrl: qr_image_url })
-  } catch (e) {
-    console.error('Error generating QR:', e)
-  } finally {
-    generating.value = false
-  }
-}
-
-function updateContent() {
-  emit('update', props.element.id, { content: localContent.value })
-  generateQRCode()
-}
-
-function updateForegroundColor() {
-  emit('update', props.element.id, { foregroundColor: localForegroundColor.value })
-  generateQRCode()
-}
-
-function updateBackgroundColor() {
-  emit('update', props.element.id, { backgroundColor: localBackgroundColor.value })
-  generateQRCode()
-}
-
-function updateErrorCorrectionLevel() {
-  emit('update', props.element.id, { errorCorrectionLevel: localErrorCorrectionLevel.value })
-  generateQRCode()
-}
-
-watch(
-  () => props.element.content,
-  (val) => {
-    localContent.value = val || ''
-  }
-)
-
-watch(
-  () => props.element.foregroundColor,
-  (val) => {
-    localForegroundColor.value = val || '#000000'
-  }
-)
-
-watch(
-  () => props.element.backgroundColor,
-  (val) => {
-    localBackgroundColor.value = val || '#ffffff'
-  }
-)
-
-watch(
-  () => props.element.errorCorrectionLevel,
-  (val) => {
-    localErrorCorrectionLevel.value = val || 'medium'
-  }
-)
-
-onMounted(() => {
-  if (props.element.qrImageUrl) {
-    qrImageUrl.value = props.element.qrImageUrl
-  } else if (localContent.value) {
-    generateQRCode()
-  }
-})
-</script>

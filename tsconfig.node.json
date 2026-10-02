@@ -5,12 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "strict": true
   },
-  "include": ["vite.config.ts", "postcss.config.js"]
+  "include": ["vite.config.ts", "vitest.config.ts"]
 }

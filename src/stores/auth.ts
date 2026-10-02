@@ -1,80 +1,74 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { AuthUser } from '@/types'
-import { login, register, logout, getMe, setAuthToken, removeAuthToken, getStoredToken, setStoredUser, getStoredUser, clearAuth } from '@services/auth'
+import type { User, AuthState } from '@/types'
+import { authService } from '@/services/auth'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<AuthUser | null>(getStoredUser())
-  const token = ref<string | null>(getStoredToken())
+  const user = ref<User | null>(null)
+  const token = ref<string | null>(localStorage.getItem('token'))
   const loading = ref(false)
   const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
 
-  async function loginUser(credentials: { email: string; password: string }) {
+  async function initializeAuth() {
+    const storedToken = localStorage.getItem('token')
+    if (storedToken) {
+      token.value = storedToken
+      try {
+        const userData = await authService.getMe()
+        user.value = userData
+      } catch {
+        logout()
+      }
+    }
+  }
+
+  async function login(email: string, password: string) {
     loading.value = true
     error.value = null
     try {
-      const { user: userData, token: tokenData } = await login(credentials)
-      user.value = userData
-      token.value = tokenData
-      setAuthToken(tokenData)
-      setStoredUser(userData)
-      return { success: true }
-    } catch (e: any) {
-      error.value = e.response?.data?.message || 'Error al iniciar sesión'
-      return { success: false, error: error.value }
+      const response = await authService.login(email, password)
+      token.value = response.token
+      user.value = response.user
+      localStorage.setItem('token', response.token)
+      return response
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Login failed'
+      error.value = message
+      throw err
     } finally {
       loading.value = false
     }
   }
 
-  async function registerUser(data: { name: string; email: string; password: string; password_confirmation: string }) {
+  async function register(name: string, email: string, password: string) {
     loading.value = true
     error.value = null
     try {
-      const { user: userData, token: tokenData } = await register(data)
-      user.value = userData
-      token.value = tokenData
-      setAuthToken(tokenData)
-      setStoredUser(userData)
-      return { success: true }
-    } catch (e: any) {
-      error.value = e.response?.data?.message || 'Error al registrarse'
-      return { success: false, error: error.value }
+      const response = await authService.register(name, email, password)
+      token.value = response.token
+      user.value = response.user
+      localStorage.setItem('token', response.token)
+      return response
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Registration failed'
+      error.value = message
+      throw err
     } finally {
       loading.value = false
     }
   }
 
-  async function logoutUser() {
-    try {
-      await logout()
-    } catch (e) {
-      console.error('Logout error:', e)
-    } finally {
-      clearAuth()
-      user.value = null
-      token.value = null
-    }
+  function logout() {
+    token.value = null
+    user.value = null
+    localStorage.removeItem('token')
   }
 
-  async function fetchUser() {
-    if (!token.value) return
-    try {
-      const { user: userData } = await getMe()
-      user.value = userData
-      setStoredUser(userData)
-    } catch (e) {
-      clearAuth()
-      user.value = null
-      token.value = null
-    }
-  }
-
-  function initializeAuth() {
-    if (token.value && !user.value) {
-      fetchUser()
+  function updateUser(userData: Partial<User>) {
+    if (user.value) {
+      user.value = { ...user.value, ...userData }
     }
   }
 
@@ -84,10 +78,10 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     isAuthenticated,
-    loginUser,
-    registerUser,
-    logoutUser,
-    fetchUser,
     initializeAuth,
+    login,
+    register,
+    logout,
+    updateUser,
   }
 })

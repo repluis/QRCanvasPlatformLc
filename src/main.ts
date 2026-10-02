@@ -2,70 +2,34 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
-import './assets/main.css'
+import './style.css'
 
-const routes = [
-  { path: '/', redirect: '/home' },
-  {
-    path: '/home',
-    name: 'home',
-    component: () => import('@pages/Home.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('@pages/auth/Login.vue'),
-    meta: { guest: true }
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: () => import('@pages/auth/Register.vue'),
-    meta: { guest: true }
-  },
-  {
-    path: '/editor',
-    name: 'editor',
-    component: () => import('@pages/Editor.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/page',
-    name: 'page-view',
-    component: () => import('@pages/PageView.vue'),
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: () => import('@pages/Settings.vue'),
-    meta: { requiresAuth: true }
-  },
-]
+// Import routes
+import { routes } from './router/routes'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 })
 
-const pinia = createPinia()
-const app = createApp(App)
+// Navigation guard for auth
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login', '/register', '/qr/love']
+  const authRequired = !publicPages.includes(to.path)
+  const token = localStorage.getItem('token')
 
-app.use(pinia)
+  if (authRequired && !token) {
+    return next('/login')
+  }
+
+  if (token && (to.path === '/login' || to.path === '/register')) {
+    return next('/')
+  }
+
+  next()
+})
+
+const app = createApp(App)
+app.use(createPinia())
 app.use(router)
 app.mount('#app')
-
-// Import after app creation to avoid circular dependency
-import { useAuthStore } from '@stores/auth'
-
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-  
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ name: 'login', query: { redirect: to.fullPath } })
-  } else if (to.meta.guest && authStore.isAuthenticated) {
-    next({ name: 'home' })
-  } else {
-    next()
-  }
-})

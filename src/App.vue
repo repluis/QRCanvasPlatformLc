@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-
-const authStore = useAuthStore()
-
-// Initialize auth on app load
-authStore.initializeAuth()
+import MainLayout from '@/shared/layouts/MainLayout.vue'
 </script>
 
 <template>
-  <div class="min-h-screen">
-    <RouterView />
-  </div>
+  <RouterView v-slot="{ Component, route }">
+    <MainLayout v-if="route.meta.layout === 'main'">
+      <component :is="Component" />
+    </MainLayout>
+    <component :is="Component" v-else />
+  </RouterView>
 </template>

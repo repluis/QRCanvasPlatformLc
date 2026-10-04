@@ -2,72 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: #f9fafb;
-  --surface: #ffffff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --text-muted: #6b7280;
-  --text-dim: #9ca3af;
-  --primary: #ec4899;
-  --primary-hover: #db2777;
-  --danger: #ef4444;
-  --success: #22c55e;
+@layer base {
+  body {
+    @apply bg-bg font-sans text-text antialiased;
+    margin: 0;
+  }
 }
 
-.dark {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --border: #334155;
-  --text: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --primary: #f472b6;
-  --primary-hover: #ec4899;
-  --danger: #f87171;
-  --success: #4ade80;
+@layer components {
+  /* Editor side panels (light UI) */
+  .panel-label {
+    @apply mb-1 block text-xs text-gray-400;
+  }
+  .panel-input {
+    @apply w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400;
+  }
 }
 
-* {
-  box-sizing: border-box;
+/* Keyframes used by "animation" elements; names are stored in page data */
+@keyframes float-heart {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+@keyframes spin-star {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse-heart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+@keyframes bounce-circle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+@keyframes twinkle-star {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+@keyframes drift-cloud {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(15px, -10px); }
+  50% { transform: translate(0, -20px); }
+  75% { transform: translate(-15px, -10px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes float-flower {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(15deg); }
+}
+@keyframes spin-moon {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
 }
 
-body {
-  margin: 0;
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-input, button, textarea, select {
-  font-family: inherit;
-}
-
-a {
-  color: inherit;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: var(--border);
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text-muted);
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

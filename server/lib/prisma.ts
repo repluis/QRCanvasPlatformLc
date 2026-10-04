@@ -7,12 +7,15 @@ import { PrismaClient } from '@prisma/client'
  * from .env is used.
  */
 function resolveDatabaseUrl() {
-  const raw = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL
+  const source = process.env.POSTGRES_PRISMA_URL ? 'POSTGRES_PRISMA_URL' : 'DATABASE_URL'
+  const raw = process.env[source]
   if (!raw) {
     throw new Error('Set DATABASE_URL (or POSTGRES_PRISMA_URL) to your PostgreSQL connection string')
   }
 
   const url = new URL(raw)
+  // No password; on Supabase the user is "postgres.<project-ref>", which tells which project is used
+  console.log(`[db] using ${source}: ${url.username}@${url.hostname}:${url.port}${url.pathname}`)
   // Supabase's transaction pooler needs pgbouncer mode, and one connection per
   // serverless instance avoids exhausting the pool
   if (url.hostname.endsWith('.pooler.supabase.com')) {

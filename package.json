@@ -10,11 +10,12 @@
     "build": "npm run db:generate && npm run build:frontend && npm run build:backend",
     "build:frontend": "vite build",
     "build:backend": "tsc -p tsconfig.server.json",
-    "vercel-build": "npm run db:generate && npm run build:frontend && npm run build:backend",
+    "vercel-build": "npm run db:generate && npm run db:deploy && npm run build:frontend",
     "preview": "vite preview",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "node scripts/migrate-deploy.mjs",
     "db:studio": "prisma studio",
     "lint": "eslint . --ext .vue,.ts,.js",
     "test": "vitest"

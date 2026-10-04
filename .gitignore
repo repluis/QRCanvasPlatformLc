@@ -39,9 +39,6 @@ coverage/
 *.sqlite
 *.db
 
-# Prisma
-prisma/migrations/
-
 # Vercel
 .vercel
 

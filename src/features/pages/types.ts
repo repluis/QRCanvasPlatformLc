@@ -104,7 +104,7 @@ export interface PageSummary {
   title: string
   slug: string
   status: boolean
-  updatedAt: string
+  updatedAt: string | null
 }
 
 export interface Page extends PageSummary {

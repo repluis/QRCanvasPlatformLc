@@ -20,7 +20,8 @@ const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ['year', 31536000], ['month', 2592000], ['day', 86400], ['hour', 3600], ['minute', 60],
 ]
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string | null) {
+  if (!iso) return ''
   const seconds = (new Date(iso).getTime() - Date.now()) / 1000
   const [unit, size] = UNITS.find(([, s]) => Math.abs(seconds) >= s) ?? ['second', 1]
   return relativeTime.format(Math.round(seconds / size), unit)

@@ -32,8 +32,9 @@ model Page {
   background String  @default("#ffffff")
   status    Boolean  @default(true)
   userId    Int      @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  // Nullable: pages written by older versions of the app may lack timestamps
+  createdAt DateTime? @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

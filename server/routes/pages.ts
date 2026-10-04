@@ -91,7 +91,7 @@ pagesRouter.use(requireAuth)
 pagesRouter.get('/', asyncHandler<AuthRequest>(async (req, res) => {
   const pages = await prisma.page.findMany({
     where: { userId: req.user!.id },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { updatedAt: { sort: 'desc', nulls: 'last' } },
     select: { id: true, uuid: true, title: true, slug: true, status: true, updatedAt: true },
   })
   res.json({ data: pages })

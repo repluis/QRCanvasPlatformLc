@@ -72,7 +72,7 @@ async function handleSubmit(e: Event) {
           />
         </div>
 
-        <BaseButton variant="primary" size="lg" class="w-full" :loading="authStore.loading">
+        <BaseButton type="submit" variant="primary" size="lg" class="w-full" :loading="authStore.loading">
           Sign In
         </BaseButton>
       </form>

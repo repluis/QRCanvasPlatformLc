@@ -19,9 +19,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url: string = error.config?.url ?? ''
+    const isAuthAttempt = url.startsWith('/auth/login') || url.startsWith('/auth/register')
+    if (error.response?.status === 401 && !isAuthAttempt) {
       localStorage.removeItem('token')
       window.location.href = '/login'
+    }
+    // Surface the server's error message instead of axios' generic one
+    const serverMessage = error.response?.data?.error
+    if (serverMessage) {
+      error.message = serverMessage
     }
     return Promise.reject(error)
   }
